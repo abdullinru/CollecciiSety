@@ -13,16 +13,23 @@ public class EmployeeService {
 //    }
 
     public void add(String firstName, String lastName) {
+        if (find(firstName, lastName)) {
+            throw new EmployeeAlreadyAddedException("Данный сотрудник уже добавлен! ");
+        }
         for (int i = 0; i < employees.length; i++) {
             if (employees[i] == null) {
                 employees[i] = new Employee(firstName, lastName);
                 break;
             }
         }
+        throw new EmployeeStorageIsFullException("Массив переполнен! ");
 
     }
 
     public void delete(String firstName, String lastName) {
+        if (find(firstName, lastName)) {
+            throw new EmployeeNotFoundException("Нет такого сотрудника");
+        }
         for (int i = 0; i < employees.length; i++) {
             if (Objects.equals(employees[i].getFirstName(), firstName) &&
                     Objects.equals(employees[i].getLastName(), lastName)) {
@@ -39,6 +46,6 @@ public class EmployeeService {
                 return true;
             }
         }
-        return false;
+        throw new EmployeeNotFoundException("Сотрудник не найден");
     }
 }
