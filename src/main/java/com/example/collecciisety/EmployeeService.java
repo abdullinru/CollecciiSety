@@ -2,27 +2,29 @@ package com.example.collecciisety;
 
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Service
 public class EmployeeService {
-    private Employee[] employees;
+    private final List<Employee> employees;
+    private final int max = 3;
+
 
     public EmployeeService() {
-        this.employees = new Employee[3];;
+        this.employees = new ArrayList<>();
     }
 
     public Employee add(String firstName, String lastName) {
         if (findPrivate(firstName, lastName)) {
             throw new EmployeeAlreadyAddedException("Данный сотрудник уже добавлен! ");
         }
-        for (int i = 0; i < employees.length; i++) {
-            if (employees[i] == null) {
-                employees[i] = new Employee(firstName, lastName);
-                return employees[i];
-            }
+        if (employees.size() == max) {
+            throw new EmployeeStorageIsFullException("Массив переполнен! ");
         }
-        throw new EmployeeStorageIsFullException("Массив переполнен! ");
+        employees.add(new Employee(firstName, lastName));
+        return employees.get(employees.size() - 1);
 
     }
 
@@ -30,11 +32,11 @@ public class EmployeeService {
         if (!findPrivate(firstName, lastName)) {
             throw new EmployeeNotFoundException("Нет такого сотрудника");
         }
-        for (int i = 0; i < employees.length; i++) {
-            if (Objects.equals(employees[i].getFirstName(), firstName) &&
-                    Objects.equals(employees[i].getLastName(), lastName)) {
+        for (int i = 0; i < employees.size(); i++) {
+            if (Objects.equals(employees.get(i).getFirstName(), firstName) &&
+                    Objects.equals(employees.get(i).getLastName(), lastName)) {
                 Employee employee1 = new Employee(firstName, lastName);
-                employees[i] = null;
+                employees.set(i, null);
                 return employee1;
             }
         }
@@ -43,9 +45,6 @@ public class EmployeeService {
 
     public Employee find(String firstName, String lastName) {
         for (Employee employee : employees) {
-            if (employee == null) {
-                throw new EmployeeNotFoundException("Сотрудник не найден");
-            }
             if (Objects.equals(employee.getFirstName(), firstName) &&
                     Objects.equals(employee.getLastName(), lastName)) {
                 return employee;
@@ -53,16 +52,18 @@ public class EmployeeService {
         }
         throw new EmployeeNotFoundException("Сотрудник не найден");
     }
+
     private boolean findPrivate(String firstName, String lastName) {
         for (Employee employee : employees) {
-            if (employee == null) {
-                return false;
-            }
             if (Objects.equals(employee.getFirstName(), firstName) &&
                     Objects.equals(employee.getLastName(), lastName)) {
                 return true;
             }
         }
         return false;
+    }
+
+    public List<Employee> print() {
+        return employees;
     }
 }
