@@ -29,38 +29,25 @@ public class EmployeeService {
     }
 
     public Employee delete(String firstName, String lastName) {
+        Employee emp = new Employee(firstName, lastName);
         if (!findPrivate(firstName, lastName)) {
             throw new EmployeeNotFoundException("Нет такого сотрудника");
+        } else {
+            employees.remove(emp);
         }
-        for (int i = 0; i < employees.size(); i++) {
-            if (Objects.equals(employees.get(i).getFirstName(), firstName) &&
-                    Objects.equals(employees.get(i).getLastName(), lastName)) {
-                Employee employee1 = new Employee(firstName, lastName);
-                employees.set(i, null);
-                return employee1;
-            }
-        }
-        return null;
+        return emp;
     }
 
     public Employee find(String firstName, String lastName) {
-        for (Employee employee : employees) {
-            if (Objects.equals(employee.getFirstName(), firstName) &&
-                    Objects.equals(employee.getLastName(), lastName)) {
-                return employee;
-            }
+        if (findPrivate(firstName, lastName)) {
+            return new Employee(firstName, lastName);
+        } else {
+            throw new EmployeeNotFoundException("Сотрудник не найден");
         }
-        throw new EmployeeNotFoundException("Сотрудник не найден");
     }
 
     private boolean findPrivate(String firstName, String lastName) {
-        for (Employee employee : employees) {
-            if (Objects.equals(employee.getFirstName(), firstName) &&
-                    Objects.equals(employee.getLastName(), lastName)) {
-                return true;
-            }
-        }
-        return false;
+        return employees.contains(new Employee(firstName, lastName));
     }
 
     public List<Employee> print() {
