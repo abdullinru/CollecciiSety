@@ -2,18 +2,16 @@ package com.example.collecciisety;
 
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class EmployeeService {
-    private final List<Employee> employees;
+    private final Map<String, Employee> employees;
     private final int max = 3;
 
 
     public EmployeeService() {
-        this.employees = new ArrayList<>();
+        this.employees = new HashMap<>();
     }
 
     public Employee add(String firstName, String lastName) {
@@ -23,8 +21,8 @@ public class EmployeeService {
         if (employees.size() == max) {
             throw new EmployeeStorageIsFullException("Массив переполнен! ");
         }
-        employees.add(new Employee(firstName, lastName));
-        return employees.get(employees.size() - 1);
+        employees.put(firstName + " " + lastName ,new Employee(firstName, lastName));
+        return employees.get(firstName + " " + lastName);
 
     }
 
@@ -33,7 +31,7 @@ public class EmployeeService {
         if (!findPrivate(firstName, lastName)) {
             throw new EmployeeNotFoundException("Нет такого сотрудника");
         } else {
-            employees.remove(emp);
+            employees.remove(firstName + " " + lastName);
         }
         return emp;
     }
@@ -47,10 +45,10 @@ public class EmployeeService {
     }
 
     private boolean findPrivate(String firstName, String lastName) {
-        return employees.contains(new Employee(firstName, lastName));
+        return employees.containsKey(firstName + " " + lastName);
     }
 
-    public List<Employee> print() {
+    public Map<String, Employee> print() {
         return employees;
     }
 }
