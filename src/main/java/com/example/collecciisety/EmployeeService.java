@@ -31,9 +31,8 @@ public class EmployeeService {
         if (!findPrivate(firstName, lastName)) {
             throw new EmployeeNotFoundException("Нет такого сотрудника");
         } else {
-            employees.remove(firstName + " " + lastName);
+            return employees.remove(firstName + " " + lastName);
         }
-        return emp;
     }
 
     public Employee find(String firstName, String lastName) {
@@ -48,7 +47,8 @@ public class EmployeeService {
         return employees.containsKey(firstName + " " + lastName);
     }
 
-    public Map<String, Employee> print() {
-        return employees;
+    public Collection<Employee> print() {
+
+        return Collections.unmodifiableCollection(employees.values());
     }
 }
