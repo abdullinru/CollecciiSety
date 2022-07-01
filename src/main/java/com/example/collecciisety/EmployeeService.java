@@ -15,9 +15,9 @@ public class EmployeeService {
     }
 
     public Employee add(String firstName, String lastName) {
-        if (findPrivate(firstName, lastName)) {
-            throw new EmployeeAlreadyAddedException("Данный сотрудник уже добавлен! ");
-        }
+//        if (findPrivate(firstName, lastName)) {
+//            throw new EmployeeAlreadyAddedException("Данный сотрудник уже добавлен! ");
+//        }
         if (employees.size() == max) {
             throw new EmployeeStorageIsFullException("Массив переполнен! ");
         }
