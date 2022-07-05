@@ -51,4 +51,72 @@ public class EmployeeService {
 
         return Collections.unmodifiableCollection(employees.values());
     }
+
+
+
+
+    public Employee[] bazaSotrudnikovOtdela(int otdel) {
+        int count = 0;
+        Employee[] sotrudOtdela = new Employee[employee.length];
+        for (Employee value : employee) {
+            if (value == null) {
+                continue;
+            }
+            if (otdel == value.getOtdel()) {
+                sotrudOtdela[count] = value;
+                count++;
+            }
+        }
+        return sotrudOtdela;
+    }
+
+    public void sotrudMinZpOtdel(int otdel) {
+        System.out.println("Отдел № " + otdel);
+        EmployeeBook book1 = new EmployeeBook(bazaSotrudnikovOtdela(otdel));
+        book1.findSotrudMinZp();
+    }
+
+    public void sotrudMaxZpOtdel(int otdel) {
+        System.out.println("Отдел № " + otdel);
+        EmployeeBook book1 = new EmployeeBook(bazaSotrudnikovOtdela(otdel));
+        book1.findSotrudMaxZp();
+    }
+
+    public void sumSalaryOtdel(int otdel) {
+        System.out.println("Отдел № " + otdel);
+        EmployeeBook book1 = new EmployeeBook(bazaSotrudnikovOtdela(otdel));
+        book1.sumSalary();
+    }
+
+    public void sredneeSalaryOtdel(int otdel) {
+        System.out.println("Отдел № " + otdel);
+        EmployeeBook book1 = new EmployeeBook(bazaSotrudnikovOtdela(otdel));
+        book1.sredneeSalary();
+    }
+
+    public void indexSalaryOtdel(int otdel, int procent) {
+        System.out.println("Отдел № " + otdel);
+        EmployeeBook book1 = new EmployeeBook(bazaSotrudnikovOtdela(otdel));
+        book1.indexSalary(procent);
+    }
+
+    public void printOtdel(int otdel) {
+        System.out.println("Отдел № " + otdel);
+        EmployeeBook book1 = new EmployeeBook(bazaSotrudnikovOtdela(otdel));
+        for (Employee value : book1.employee) {
+            if (value == null) {
+                continue;
+            }
+            System.out.println("Сотрудник id: " + value.getId() +
+                    ", ФИО: " + value.getName() +
+                    ", Зарплата: " + value.getSalary());
+        }
+    }
+
+    public void printVseOtdely() {
+        for (int i = 1; i < 6; i++) {
+            printOtdel(i);
+
+        }
+    }
 }
