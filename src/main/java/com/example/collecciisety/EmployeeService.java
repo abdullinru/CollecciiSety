@@ -3,6 +3,8 @@ package com.example.collecciisety;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 public class EmployeeService {
@@ -14,6 +16,10 @@ public class EmployeeService {
         this.employees = new HashMap<>();
     }
 
+    private String getKey(String firstName, String lastName) {
+        return firstName + " " + lastName;
+    }
+
     public Employee add(String firstName, String lastName) {
 //        if (findPrivate(firstName, lastName)) {
 //            throw new EmployeeAlreadyAddedException("Данный сотрудник уже добавлен! ");
@@ -21,8 +27,8 @@ public class EmployeeService {
         if (employees.size() == max) {
             throw new EmployeeStorageIsFullException("Массив переполнен! ");
         }
-        employees.put(firstName + " " + lastName ,new Employee(firstName, lastName));
-        return employees.get(firstName + " " + lastName);
+        employees.put(getKey(firstName, lastName) ,new Employee(firstName, lastName));
+        return employees.get(getKey(firstName, lastName));
 
     }
 
@@ -31,7 +37,7 @@ public class EmployeeService {
         if (!findPrivate(firstName, lastName)) {
             throw new EmployeeNotFoundException("Нет такого сотрудника");
         } else {
-            return employees.remove(firstName + " " + lastName);
+            return employees.remove(getKey(firstName, lastName));
         }
     }
 
@@ -44,79 +50,71 @@ public class EmployeeService {
     }
 
     private boolean findPrivate(String firstName, String lastName) {
-        return employees.containsKey(firstName + " " + lastName);
+        return employees.containsKey(getKey(firstName, lastName));
     }
 
     public Collection<Employee> print() {
-
         return Collections.unmodifiableCollection(employees.values());
     }
 
 
 
 
-    public Employee[] bazaSotrudnikovOtdela(int otdel) {
-        int count = 0;
-        Employee[] sotrudOtdela = new Employee[employee.length];
-        for (Employee value : employee) {
-            if (value == null) {
-                continue;
-            }
-            if (otdel == value.getOtdel()) {
-                sotrudOtdela[count] = value;
-                count++;
-            }
-        }
-        return sotrudOtdela;
+    public List <Employee> bazaSotrudnikovOtdela(int otdel) {
+        return employees.values().stream().
+                filter(e -> e.getDepartment() == otdel).
+                collect(Collectors.toList());
     }
 
-    public void sotrudMinZpOtdel(int otdel) {
-        System.out.println("Отдел № " + otdel);
-        EmployeeBook book1 = new EmployeeBook(bazaSotrudnikovOtdela(otdel));
-        book1.findSotrudMinZp();
+    public Optional<Employee> sotrudMinZpOtdel(int otdel) {
+        return employees.values().stream().
+                filter(e -> e.getDepartment() == otdel).
+                max(new EmployeeSalaryComparator());
     }
 
-    public void sotrudMaxZpOtdel(int otdel) {
-        System.out.println("Отдел № " + otdel);
-        EmployeeBook book1 = new EmployeeBook(bazaSotrudnikovOtdela(otdel));
-        book1.findSotrudMaxZp();
+    public Optional<Employee> sotrudMaxZpOtdel(int otdel) {
+        return employees.values().stream().
+                filter(e -> e.getDepartment() == otdel).
+                min(new EmployeeSalaryComparator());
     }
 
-    public void sumSalaryOtdel(int otdel) {
-        System.out.println("Отдел № " + otdel);
-        EmployeeBook book1 = new EmployeeBook(bazaSotrudnikovOtdela(otdel));
-        book1.sumSalary();
+    public double sumSalaryOtdel(int otdel) {
+        List<Double> SalaryList =  employees.values().stream().
+                filter(e -> e.getDepartment() == otdel).
+                map(e -> e.getSalary()).collect(Collectors.toList());
+        return SalaryList.stream().reduce(Double::sum).get();
     }
 
-    public void sredneeSalaryOtdel(int otdel) {
-        System.out.println("Отдел № " + otdel);
-        EmployeeBook book1 = new EmployeeBook(bazaSotrudnikovOtdela(otdel));
-        book1.sredneeSalary();
+    public double sredneeSalaryOtdel(int otdel) {
+        List<Double> SalaryList =  employees.values().stream().
+                filter(e -> e.getDepartment() == otdel).
+                map(e -> e.getSalary()).collect(Collectors.toList());
+        return SalaryList.stream().reduce(Double::sum).get()/ (long) SalaryList.size();
     }
 
-    public void indexSalaryOtdel(int otdel, int procent) {
-        System.out.println("Отдел № " + otdel);
-        EmployeeBook book1 = new EmployeeBook(bazaSotrudnikovOtdela(otdel));
-        book1.indexSalary(procent);
+    public List<Employee> indexSalaryOtdel(int otdel, int procent) {
+        return employees.values().stream().filter(e -> e.getDepartment() == otdel).
+                map(e -> e.setSalary(e.getSalary() * (1 + (double) procent / 100))).
+                collect(Collectors.toList());
     }
 
-    public void printOtdel(int otdel) {
-        System.out.println("Отдел № " + otdel);
-        EmployeeBook book1 = new EmployeeBook(bazaSotrudnikovOtdela(otdel));
-        for (Employee value : book1.employee) {
-            if (value == null) {
-                continue;
-            }
-            System.out.println("Сотрудник id: " + value.getId() +
-                    ", ФИО: " + value.getName() +
-                    ", Зарплата: " + value.getSalary());
-        }
-    }
-
-    public void printVseOtdely() {
-        for (int i = 1; i < 6; i++) {
-            printOtdel(i);
-
-        }
-    }
+//    public void printOtdel(int otdel) {
+//        System.out.println("Отдел № " + otdel);
+//        EmployeeBook book1 = new EmployeeBook(bazaSotrudnikovOtdela(otdel));
+//        for (Employee value : book1.employee) {
+//            if (value == null) {
+//                continue;
+//            }
+//            System.out.println("Сотрудник id: " + value.getId() +
+//                    ", ФИО: " + value.getName() +
+//                    ", Зарплата: " + value.getSalary());
+//        }
+//    }
+//
+//    public void printVseOtdely() {
+//        for (int i = 1; i < 6; i++) {
+//            printOtdel(i);
+//
+//        }
+//    }
 }
