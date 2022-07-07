@@ -15,6 +15,9 @@ public class EmployeeService {
         this.employees = new HashMap<>();
     }
 
+    public Map<String, Employee> getEmployees() {
+        return employees;
+    }
     private String getKey(String firstName, String lastName) {
         return firstName + " " + lastName;
     }
@@ -54,4 +57,6 @@ public class EmployeeService {
     public Collection<Employee> allSotrudniki() {
         return Collections.unmodifiableCollection(employees.values());
     }
+
+
 }
