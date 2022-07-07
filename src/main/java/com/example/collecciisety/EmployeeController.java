@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/employee/")
+@RequestMapping("/employee")
 
 public class EmployeeController {
     private final EmployeeService employeeService;
@@ -20,23 +20,25 @@ public class EmployeeController {
         this.employeeService = employeeService;
     }
 
-    @GetMapping("add")
+    @GetMapping("/add")
     public Employee addEmployee(@RequestParam(name = "firstName") String firstName,
-                                 @RequestParam(name = "lastName") String lastName) {
-            return employeeService.add(firstName, lastName);
+                                 @RequestParam(name = "lastName") String lastName,
+                                @RequestParam(name = "departmentId") Integer department,
+                                @RequestParam(name = "salary") Double salary) {
+            return employeeService.add(firstName, lastName, department, salary);
     }
-    @GetMapping("remove")
+    @GetMapping("/remove")
     public Employee removeEmployee(@RequestParam(name = "firstName") String firstName,
                                  @RequestParam(name = "lastName") String lastName) {
             return employeeService.delete(firstName, lastName);
     }
-    @GetMapping("find")
+    @GetMapping("/find")
     public Employee findEmployee(@RequestParam(name = "firstName") String firstName,
                                  @RequestParam(name = "lastName") String lastName) {
             return employeeService.find(firstName, lastName);
     }
-    @GetMapping("print")
-    public Collection<Employee> printEmployee() {
-        return employeeService.print();
+    @GetMapping("/print")
+    public Collection<Employee> allEmployee() {
+        return employeeService.allSotrudniki();
     }
 }

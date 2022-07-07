@@ -26,9 +26,12 @@ public class Employee {
     }
 
 
-    public Employee(String firstName, String lastName) {
+    public Employee(String firstName, String lastName, int department, double salary) {
         this.firstName = firstName;
         this.lastName = lastName;
+        this.department = department;
+        this.salary = salary;
+
     }
 
     public String getFirstName() {
