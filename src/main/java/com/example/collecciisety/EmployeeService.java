@@ -23,38 +23,38 @@ public class EmployeeService {
         return firstName + " " + lastName;
     }
 
-    public Employee add(String firstName, String lastName, int department, double salary) {
-        if (StringUtils.isBlank(lastName) || StringUtils.isBlank(firstName) ||
-        StringUtils.contains(firstName, "\\d") || StringUtils.contains(lastName, "\\d")||
-        StringUtils.contains(firstName,"\\W") ||StringUtils.contains(lastName, "\\W")) {
+    private void validateFirstLastName(String firstName, String lastName) {
+        if (!StringUtils.isAlpha(firstName) || !StringUtils.isAlpha(lastName)) {
             throw new EmployeeNotEntered("Вы не ввели имя или фамилию сотрудника");
         }
-        String key = getKey(StringUtils.capitalize(firstName), StringUtils.capitalize(lastName));
-        if (findPrivate(StringUtils.capitalize(firstName), StringUtils.capitalize(lastName))) {
+    }
+
+    public Employee add(String firstName, String lastName, int department, double salary) {
+        validateFirstLastName(firstName, lastName);
+        String key = getKey(firstName, lastName);
+        if (findPrivate(firstName, lastName)) {
             throw new EmployeeAlreadyAddedException("Данный сотрудник уже добавлен! ");
         }
         if (employees.size() == MAX) {
             throw new EmployeeStorageIsFullException("Массив переполнен! ");
         }
-        employees.put(key ,new Employee(StringUtils.capitalize(firstName), StringUtils.capitalize(lastName), department, salary));
+        employees.put(key ,new Employee(firstName, lastName, department, salary));
         return employees.get(key);
     }
 
     public Employee delete(String firstName, String lastName) {
-        if (StringUtils.isBlank(lastName) || StringUtils.isBlank(firstName)) {
-            throw new EmployeeNotEntered("Вы не ввели имя или фамилию сотрудника");
-        }
-        if (!findPrivate(StringUtils.capitalize(firstName), StringUtils.capitalize(lastName))) {
+        validateFirstLastName(firstName, lastName);
+
+        if (!findPrivate(firstName, lastName)) {
             throw new EmployeeNotFoundException("Нет такого сотрудника");
         } else {
-            return employees.remove(getKey(StringUtils.capitalize(firstName), StringUtils.capitalize(lastName)));
+            return employees.remove(getKey(firstName, lastName));
         }
     }
 
     public Employee find(String firstName, String lastName) {
-        if (StringUtils.isBlank(lastName) || StringUtils.isBlank(firstName)) {
-            throw new EmployeeNotEntered("Вы не ввели имя или фамилию сотрудника");
-        }
+        validateFirstLastName(firstName, lastName);
+
         if (findPrivate(StringUtils.capitalize(firstName), StringUtils.capitalize(lastName))) {
             return employees.get(getKey(StringUtils.capitalize(firstName), StringUtils.capitalize(lastName)));
         } else {
